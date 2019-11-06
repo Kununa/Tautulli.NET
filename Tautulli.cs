@@ -14,11 +14,32 @@ namespace Tautulli.Net
         private readonly string apiKey;
         private readonly HttpClient httpClient = new HttpClient();
 
+        /// <summary>
+        /// Constructor using an url. For example when Tautulli is behind a reverse proxy
+        /// </summary>
+        /// <param name="url">Base url of Tatulli</param>
+        /// <param name="apiKey">API key from Tautulli</param>
         public Tautulli(string url, string apiKey)
         {
             if (!url.EndsWith("/"))
                 url += "/";
             this.url = url;
+            this.apiKey = apiKey;
+        }
+
+        /// <summary>
+        /// Constructor using IP and port. IP can be local
+        /// </summary>
+        /// <param name="ip">The IP of the Tautulli Server</param>
+        /// <param name="port">The port of the Tautulli Server</param>
+        /// <param name="apiKey">API key from Tautulli</param>
+        public Tautulli(string ip, int port, string apiKey, string basePath = "")
+        {
+            url = "http://" + ip + ":" + port + "/";
+            if (!string.IsNullOrEmpty(basePath))
+                url += basePath;
+            if (!url.EndsWith("/"))
+                url += "/";
             this.apiKey = apiKey;
         }
 
@@ -37,7 +58,7 @@ namespace Tautulli.Net
 
         public async Task<LibraryTable> get_libraries_table(bool grouping = false, LibraryOrderColumn orderColumn = null, OrderDir orderDir = null, int start = 0, int length = 25, string search = null)
         {
-            var parameters = new List<(string, object)> {("grouping", grouping ? 1 : 0)};
+            var parameters = new List<(string, object)> { ("grouping", grouping ? 1 : 0) };
             if (orderColumn != null)
                 parameters.Add(("order_column", orderColumn));
             if (orderDir != null)
@@ -61,7 +82,7 @@ namespace Tautulli.Net
         {
             if (statsType == null)
                 statsType = StatsType.Plays;
-            var parameters = new List<(string, object)> {("grouping", grouping ? 1 : 0)};
+            var parameters = new List<(string, object)> { ("grouping", grouping ? 1 : 0) };
             if (!string.IsNullOrEmpty(timeRange))
                 parameters.Add(("time_range", timeRange));
             parameters.Add(("stats_type", statsType));
@@ -74,7 +95,7 @@ namespace Tautulli.Net
         public async Task<History> get_history(bool grouping = false, string user = null, int userId = -1, int ratingKey = -1, int parentRatingKey = -1, int grandparentRatingKey = -1, string startDate = "YYYY-MM-DD", int sectionId = -1,
         MediaType mediaType = null, TranscodeDecision transcodeDecision = null, HistoryOrderColumn orderColumn = null, OrderDir orderDir = null, int start = 0, int length = 25, string search = null)
         {
-            var parameters = new List<(string, object)> {("grouping", grouping ? 1 : 0), ("start", start), ("length", length)};
+            var parameters = new List<(string, object)> { ("grouping", grouping ? 1 : 0), ("start", start), ("length", length) };
             if (!string.IsNullOrEmpty(user))
                 parameters.Add(("user", user));
             if (userId >= 0)
